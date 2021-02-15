@@ -90,7 +90,9 @@ class filter_pod extends moodle_text_filter {
 		$word = addslashes($config['url']);
 		$text = htmlspecialchars_decode($text);
 		// Prevent tag a href or video source
-		$text = preg_replace('/(<a href="|<video.*><source src=")(.*)(">.*<\/a>|">.*<\/video>)/', '$2', $text);
+		// $text = preg_replace('/(<a href="|<video.*><source src=")(.*)(">.*<\/a>|">.*<\/video>)/', '$2', $text);
+		$regex = '/<(a.*href="|video.*src=")((https?)?:?\/\/'.$word.'\/video\/[\w\-]+\/)">([\w\-\s\.\/^<]+)<\/(a|video)>/';
+		$text = preg_replace($regex, '$2', $text);
 		$iframetagpattern	= '(?P<ifr>iframe\s+src\s*=\s*")?';
 
 		$podpattern 		= '((?:https?\:)?(?:\/\/)?(?P<pod>'.$word.'\/[a-zA-Z\d\-\/_]*(video|video_priv)\/([a-zA-Z\d\-\/_]+|[a-zA-Z\d\-_]+\/)))';
@@ -103,7 +105,7 @@ class filter_pod extends moodle_text_filter {
 		$text = preg_replace_callback($pat, array(&$this, 'filter_pod::filter_process_pod'), $text, -1, $cpt);
 		
 		// We return the filtered text
-		return $text;		
+		return $text;
 	}
 
 	/**
